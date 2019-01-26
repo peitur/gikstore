@@ -7,7 +7,11 @@ import (
 
 func main() {
 	fmt.Println("trest")
-	db.Sample()
+
+	dbFile := "test.db"
+	if ! db.Exists(dbFile) {
+		db.InitDb( dbFile )
+	}
 
 	fmt.Println("done ...")
 }
