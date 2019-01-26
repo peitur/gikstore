@@ -7,7 +7,12 @@ TEST=test
 main: all
 
 test: .setup
-	go test -o ${TEST}/giks -json
+	go test -v -o ${TEST}/giks -json
+
+clean :
+	go clean
 
 all: .setup
-	go build -o ${BUILD}/giks main.go
+	go build -v -o ${BUILD}/giks main.go
+
+
