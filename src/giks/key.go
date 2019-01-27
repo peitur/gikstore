@@ -53,11 +53,31 @@ func GeneratePrivateKeyRSA(bits int) (*rsa.PrivateKey, error) {
 	return rsax, nil
 }
 
-func KeyPEM(key *rsa.PrivateKey, pwd string) (string, error) {
+
+func KeyPrivatePEM(key *rsa.PrivateKey, pwd string) (string, error) {
 	// pem.Block
 	pem_block := &pem.Block{
 		Type:  "RSA PRIVATE KEY",
 		Bytes: x509.MarshalPKCS1PrivateKey(key),
+	}
+
+	pemx := pem.EncodeToMemory(pem_block)
+	if pwd != "" {
+		pem_block, err := x509.EncryptPEMBlock(rand.Reader, pem_block.Type, pem_block.Bytes, []byte(pwd), x509.PEMCipherAES256)
+		if err != nil {
+			return "", err
+		}
+		pemx = pem.EncodeToMemory(pem_block)
+
+	}
+	return string(pemx), nil
+}
+
+func KeyPublicPEM(key *rsa.PrivateKey, pwd string) (string, error) {
+	// pem.Block
+	pem_block := &pem.Block{
+		Type:  "RSA PUBLIC KEY",
+		Bytes: x509.MarshalPKCS1PublicKey(&key.PublicKey),
 	}
 
 	pemx := pem.EncodeToMemory(pem_block)
