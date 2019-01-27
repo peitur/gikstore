@@ -8,9 +8,14 @@ import (
 )
 
 func main() {
-	fmt.Println("started")
+	fmt.Printf("started: %s\n", os.Args[1:] )
 
-	dbFile := "test.db"
+	if len( os.Args ) == 1{
+		fmt.Println("Need reference file")
+		os.Exit(1)
+	}
+
+	dbFile := os.Args[1]
 	if !db.Exists(dbFile) {
 		db.InitDb(dbFile)
 	}
@@ -18,7 +23,7 @@ func main() {
 	pwd := giks.FileChecksum("build/giks", "sha512")
 	fmt.Printf("Passwd: %s\n", pwd)
 
-	c, e := giks.GeneratePrivateKeyRSA(4096)
+	c, e := giks.GeneratePrivateKeyRSA(64)
 	if e != nil{
 		fmt.Println(e)
 		os.Exit(1)
