@@ -2,47 +2,48 @@ package db
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 	"log"
 	"os"
-	"errors"
 )
 
 import "giks/store"
 import _ "github.com/mattn/go-sqlite3"
 
-func Exists( filename string ) bool {
+func Exists(filename string) bool {
 	if store.FileExists(filename) {
 		return true
 	}
 	return false
 }
 
-func InitDb( filename string ) (bool,error) {
+func InitDb(filename string) (bool, error) {
 
 	if store.FileExists(filename) {
 		os.Remove(filename)
 	}
 
-	db, err := sql.Open("sqlite3", filename )
+	db, err := sql.Open("sqlite3", filename)
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer db.Close()
 
 	sqlStmt := `
-	CREATE TABLE keys (name text not null primary key, private blob not null );
-	CREATE TABLE data (name text not null primary key, key text not null, value blob not null, comment text );
+	CREATE TABLE keys (id integter not null primary key, name text not null unique, algorithm text not null, private blob not null );
+	CREATE TABLE data (id integter not null primary key, name text not null unique, key text not null, value blob not null, comment text );
 	`
 	_, err = db.Exec(sqlStmt)
 	if err != nil {
 		log.Printf("%q: %s\n", err, sqlStmt)
-		return false, errors.New( fmt.Sprintf( "Failed to initialize database: ", err ) )
+		return false, errors.New(fmt.Sprintf("Failed to initialize database: ", err))
 	}
 
 	return true, nil
 }
 
+// Sample code taken from sqliite3 go lib
 func Sample() {
 	filename := "foo.db"
 
