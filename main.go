@@ -2,20 +2,26 @@ package main
 
 import (
 	"fmt"
+	"giks"
 	"giks/db"
-	"giks/store"
 )
 
 func main() {
-	fmt.Println("trest")
+	fmt.Println("started")
 
 	dbFile := "test.db"
 	if !db.Exists(dbFile) {
 		db.InitDb(dbFile)
 	}
 
-	c, e := store.GeratePrivateKeyRSA(64, "test")
-	fmt.Println(c)
+	pwd := giks.FileChecksum("/etc/hostname", "sha512")
+	fmt.Printf("Passwd: %s\n", pwd)
+
+	c, e := giks.GeneratePrivateKeyRSA(4096)
+	p, e := giks.KeyPEM(c, pwd)
+
+	fmt.Println(p)
 	fmt.Println(e)
+
 	fmt.Println("done ...")
 }
